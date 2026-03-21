@@ -3,6 +3,9 @@ import Sidebar from "@/components/layout/Sidebar";
 import { ThemeToggle } from "@/components/features/Toggle";
 import { CurrentDate } from "@/components/features/Date";
 import { Heatmap } from "@/components/features/Heatmap";
+import { HabitCarousel } from "@/components/features/HabitCarousal";
+import { StreakStatus } from "@/components/features/Streak";
+import { RecentActivity } from "@/components/features/RecentLogs";
 
 export default function DashboardPage() {
   return (
@@ -98,18 +101,19 @@ export default function DashboardPage() {
               <h2 className="text-lg font-bold text-foreground">Today's Habits</h2>
               <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">Manage →</button>
             </div>
-            <div className="bg-card border border-border rounded-xl p-6 h-80 border-dashed flex items-center justify-center shadow-sm">
-               <span className="text-muted-foreground/50">[ Interactive Habit Cards (e.g., Morning Run) ]</span>
+            <div className="w-full">
+              <HabitCarousel />
             </div>
           </div>
           
-          <div className="space-y-6 mt-10 lg:mt-0">
-             <div className="bg-card border border-border rounded-xl p-6 h-48 border-dashed flex items-center justify-center shadow-sm">
-               <span className="text-muted-foreground/50">[ Streak Status Widget ]</span>
+          <div className="space-y-6 mt-10 lg:mt-0 flex flex-col h-[calc(100%-1rem)]">
+            <div className="flex-1 min-h-50">
+              <StreakStatus />
             </div>
-             <div className="bg-card border border-border rounded-xl p-6 h-48 border-dashed flex items-center justify-center shadow-sm">
-               <span className="text-muted-foreground/50">[ Recent Activity Log ]</span>
+            <div className="flex-1 min-h-50">
+              <RecentActivity />
             </div>
+            
           </div>
         </div>
 
