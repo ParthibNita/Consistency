@@ -7,21 +7,36 @@ import { HabitCarousel } from "@/components/features/HabitCarousal";
 import { StreakStatus } from "@/components/features/Streak";
 import { RecentActivity } from "@/components/features/RecentLogs";
 import { db } from "@/db";
-import { habits } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { habits, logs } from "@/db/schema";
+import { eq, gte } from "drizzle-orm";
 
 export default async function DashboardPage() {
+  const today = new Date();
+  const startToday = today.setHours(0, 0, 0, 0);
   const userHabits = await db.select().from(habits).where(eq(habits.userId, "dev-parthib-123")); 
-  const formathabits = userHabits.map((h)=>({
+  const todayLogs = await db.select().from(logs).where(gte(logs.loggedAt, new Date(startToday)));
+  const formatHabits = userHabits.map((h)=>{
+    const todayHabit = todayLogs.find(log=> log.habitId === h.id);
+    // if (h.type === "numeric") {
+    //   console.log(`Habit: ${h.name}`);
+    //   console.log(`Target: ${h.targetValue} (${typeof h.targetValue})`);
+    //   console.log(`Log Exists? ${!!todayHabit}`);
+    //   if (todayHabit) {
+    //     console.log(`Entry: ${todayHabit.entryValue} (${typeof todayHabit.entryValue})`);
+    //   }
+    //   console.log("-------------------");
+    // }
+    return{
     id: h.id,
     name: h.name,
     type: h.type === "numeric" ? ("Numeric" as const) : ("Boolean" as const),
     level: h.currentLevel || 1,
+    target:h.targetValue,
     goal: h.type === "numeric"? `${h.targetValue}` : "Done",
     performance: 0, 
     category: "General", 
-    isLoggedToday: false, 
-  }))
+    todayLog: todayHabit?.entryValue ?? null, 
+  }})
   return (
     <div className="min-h-screen bg-background text-foreground flex font-sans">
       <Sidebar />
@@ -116,7 +131,7 @@ export default async function DashboardPage() {
               <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">Manage →</button>
             </div>
             <div className="w-full">
-              <HabitCarousel habits={formathabits} />
+              <HabitCarousel habits={formatHabits} />
             </div>
           </div>
           

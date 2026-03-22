@@ -11,9 +11,10 @@ export type HabitDTO = {
   type: "Numeric" | "Boolean";
   level: number;
   goal: string;
+  target: number;
   performance: number;
   category: string;
-  isLoggedToday: boolean;
+  todayLog: number | null;
 };
 
 export function HabitCarousel({ habits }: { habits: HabitDTO[] }) {
