@@ -6,15 +6,17 @@ import { Heatmap } from "@/components/features/Heatmap";
 import { HabitCarousel } from "@/components/features/HabitCarousal";
 import { StreakStatus } from "@/components/features/Streak";
 import { RecentActivity } from "@/components/features/RecentLogs";
-import { db } from "@/db";
-import { habits, logs } from "@/db/schema";
-import { eq, gte } from "drizzle-orm";
+import { calcCurrentStreak, calcDiscipline } from "@/lib/calc";
+import { getUserActivityHistory } from "@/lib/dbQuery";
 
 export default async function DashboardPage() {
+  const {habits:userHabits, logs:allLogs} = await getUserActivityHistory("dev-parthib-123");
+
   const today = new Date();
-  const startToday = today.setHours(0, 0, 0, 0);
-  const userHabits = await db.select().from(habits).where(eq(habits.userId, "dev-parthib-123")); 
-  const todayLogs = await db.select().from(logs).where(gte(logs.loggedAt, new Date(startToday)));
+  const startToday = today.setHours(0, 0, 0, 0); 
+  const todayLogs = allLogs.filter(log => log.loggedAt >= new Date(startToday));
+
+  const currStreak = calcCurrentStreak(allLogs);
   const formatHabits = userHabits.map((h)=>{
     const todayHabit = todayLogs.find(log=> log.habitId === h.id);
     // if (h.type === "numeric") {
@@ -64,7 +66,7 @@ export default async function DashboardPage() {
               <Flame className="w-5 h-5 text-orange-500" />
             </div>
             <div>
-              <span className="text-4xl font-bold text-foreground">14</span>
+              <span className="text-4xl font-bold text-foreground">{currStreak}</span>
               <p className="text-xs text-muted-foreground mt-1">consecutive days</p>
             </div>
           </div>
@@ -75,7 +77,7 @@ export default async function DashboardPage() {
               <CheckCircle className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <span className="text-4xl font-bold text-foreground">89</span>
+              <span className="text-4xl font-bold text-foreground">{calcDiscipline(allLogs)}</span>
               <p className="text-xs text-muted-foreground mt-1">total logged days</p>
             </div>
           </div>
