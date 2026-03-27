@@ -6,7 +6,7 @@ import { Heatmap } from "@/components/features/Heatmap";
 import { HabitCarousel } from "@/components/features/HabitCarousal";
 import { StreakStatus } from "@/components/features/Streak";
 import { RecentActivity } from "@/components/features/RecentLogs";
-import { calcCurrentStreak, calcDiscipline } from "@/lib/calc";
+import { calcCurrentStreak, calcDiscipline, calculateSevenDayPerformance } from "@/lib/calc";
 import { getUserActivityHistory } from "@/lib/dbQuery";
 
 export default async function DashboardPage() {
@@ -17,6 +17,7 @@ export default async function DashboardPage() {
   const todayLogs = allLogs.filter(log => log.loggedAt >= new Date(startToday));
 
   const currStreak = calcCurrentStreak(allLogs);
+  const sevenDayPerf = calculateSevenDayPerformance(userHabits, allLogs);
   const formatHabits = userHabits.map((h)=>{
     const todayHabit = todayLogs.find(log=> log.habitId === h.id);
     // if (h.type === "numeric") {
@@ -39,6 +40,16 @@ export default async function DashboardPage() {
     category: "General", 
     todayLog: todayHabit?.entryValue ?? null, 
   }})
+  const recentActivities = todayLogs.slice(0,3).map(log =>{
+    const habit = userHabits.find(h => h.id === log.habitId);
+    return {
+      id: log.id,
+      name: habit?.name || "Lamine Yamal",
+      value: habit?.type === "numeric" ? log.entryValue : "Done",
+      status: "Done",
+      type: habit?.type || "boolean",
+    }
+  })
   return (
     <div className="min-h-screen bg-background text-foreground flex font-sans">
       <Sidebar />
@@ -88,7 +99,7 @@ export default async function DashboardPage() {
               <TrendingUp className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <span className="text-4xl font-bold text-foreground">78%</span>
+              <span className="text-4xl font-bold text-foreground">{sevenDayPerf}%</span>
               <p className="text-xs text-muted-foreground mt-1">across all habits</p>
             </div>
           </div>
@@ -142,7 +153,7 @@ export default async function DashboardPage() {
               <StreakStatus />
             </div>
             <div className="flex-1 min-h-50">
-              <RecentActivity />
+              <RecentActivity activities={recentActivities}  />
             </div>
             
           </div>
