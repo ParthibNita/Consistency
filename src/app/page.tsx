@@ -8,6 +8,7 @@ import { StreakStatus } from "@/components/features/Streak";
 import { RecentActivity } from "@/components/features/RecentLogs";
 import { calcCurrentStreak, calcDiscipline, calculateSevenDayPerformance } from "@/lib/calc";
 import { getUserActivityHistory } from "@/lib/dbQuery";
+import Link from "next/link";
 
 export default async function DashboardPage() {
   const {habits:userHabits, logs:allLogs} = await getUserActivityHistory("dev-parthib-123");
@@ -141,7 +142,10 @@ export default async function DashboardPage() {
           <div className="lg:col-span-2 space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-bold text-foreground">Today's Habits</h2>
-              <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">Manage →</button>
+              {/* <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">Manage →</button> */}
+              <Link href="/habits" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Manage →
+              </Link>
             </div>
             <div className="w-full">
               <HabitCarousel habits={formatHabits} />

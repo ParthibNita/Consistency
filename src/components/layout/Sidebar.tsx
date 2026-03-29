@@ -1,56 +1,61 @@
 "use client";
 
+import { LayoutDashboard, Target, Activity, Settings } from "lucide-react";
 import Link from "next/link";
-import { LayoutDashboard, CheckCircle, TrendingUp, Settings, Star } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export default function Sidebar() {
+  const pathname = usePathname(); 
+  const links = [
+    { name: "Dashboard", icon: LayoutDashboard, href: "/" }, 
+    { name: "Habits", icon: Target, href: "/habits" },
+    { name: "Progress", icon: Activity, href: "/progress" },
+    { name: "Settings", icon: Settings, href: "/settings" },
+  ];
+
   return (
-    <aside className="w-64 bg-background border-r border-border h-screen flex flex-col p-4 fixed left-0 top-0 z-50">
-      
-      <div className="flex items-center gap-3 px-2 py-4 mb-6">
-        <div className="bg-primary/20 p-1.5 rounded-md border border-primary/30">
-          <Star className="text-primary w-5 h-5 fill-primary/20" />
-        </div>
-        <span className="text-lg font-bold text-foreground tracking-wide">
-          CONSISTENCY
-        </span>
+    <aside className="fixed left-0 top-0 h-screen w-64 bg-card border-r border-border flex flex-col z-10">
+
+      <div className="p-6 border-b border-border">
+        <h1 className="text-2xl font-black tracking-tight text-foreground">
+          CONSISTENCY<span className="text-primary">.</span>
+        </h1>
       </div>
 
-      {/*nav links */}
-      <nav className="flex flex-col gap-2 grow">
-        <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2 rounded-md bg-accent text-accent-foreground font-medium transition-colors">
-          <LayoutDashboard className="w-5 h-5" />
-          Dashboard
-        </Link>
-        <Link href="/habits" className="flex items-center gap-3 px-3 py-2 rounded-md text-muted-foreground hover:bg-accent/50 hover:text-foreground transition-colors">
-          <CheckCircle className="w-5 h-5" />
-          Habits
-        </Link>
-        <Link href="/progress" className="flex items-center gap-3 px-3 py-2 rounded-md text-muted-foreground hover:bg-accent/50 hover:text-foreground transition-colors">
-          <TrendingUp className="w-5 h-5" />
-          Progress
-        </Link>
-        <Link href="/settings" className="flex items-center gap-3 px-3 py-2 rounded-md text-muted-foreground hover:bg-accent/50 hover:text-foreground transition-colors">
-          <Settings className="w-5 h-5" />
-          Settings
-        </Link>
+      <nav className="flex-1 p-4 space-y-1.5">
+        {links.map((link) => {
+          const Icon = link.icon;
+          
+          // The Logic: Is the current URL exactly equal to this link's destination?
+          const isActive = pathname === link.href;
+
+          return (
+            <Link
+              key={link.name}
+              href={link.href}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                isActive
+                  ? "bg-primary text-primary-foreground shadow-sm" // The Active Look
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground" // The Inactive Look
+              }`}
+            >
+              <Icon className="w-5 h-5" />
+              {link.name}
+            </Link>
+          );
+        })}
       </nav>
 
-      <div className="mt-auto bg-card border border-border rounded-lg p-4">
-        <div className="flex justify-between items-center mb-3">
-          <span className="text-sm font-medium text-foreground">Habit Slots</span>
-          <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20">
-            3 / 5
-          </span>
+      <div className="p-4 border-t border-border bg-card">
+        <div className="bg-background rounded-lg p-4 border border-border">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Habit Slots</span>
+            <span className="text-xs font-bold text-foreground">3 / 5</span>
+          </div>
+          <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
+            <div className="h-full bg-primary w-[20%] rounded-full" />
+          </div>
         </div>
-        
-        <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
-          <div className="h-full bg-primary w-[60%] rounded-full" />
-        </div>
-        
-        <p className="text-xs text-muted-foreground mt-3 leading-tight">
-          Level up habits to unlock more slots
-        </p>
       </div>
       
     </aside>
